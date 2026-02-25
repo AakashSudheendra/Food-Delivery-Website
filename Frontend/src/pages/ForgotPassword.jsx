@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 function ForgotPassword() {
@@ -24,13 +25,15 @@ function ForgotPassword() {
         { email },
         { withCredentials: true },
       );
-      console.log(result);
-      setStep(2);
+      if (result.data.success) {
+        toast.success("OTP Sent Successfully");
+        console.log(result);
+        setStep(2);
+      }
     } catch (error) {
       console.log(error);
     }
   };
-
   const handleVerifyOtp = async () => {
     try {
       const result = await axios.post(
@@ -38,8 +41,11 @@ function ForgotPassword() {
         { email, otp },
         { withCredentials: true },
       );
-      console.log(result);
-      setStep(3);
+      if (result.data.success) {
+        toast.success("OTP Verified Successfully");
+        console.log(result);
+        setStep(3);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -55,12 +61,19 @@ function ForgotPassword() {
         { email, newpassword },
         { withCredentials: true },
       );
-      console.log(result);
-      navigate("/signin");
+      if (result.data.success) {
+        toast.success("Password Reset Successfully");
+        console.log(result);
+        navigate("/signin");
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
+  // useEffect(()=>{
+
+  // },[])
 
   return (
     <div className="flex w-full items-center justify-center min-h-screen p-4 bg-[#fff9f6]">

@@ -105,9 +105,13 @@ export const sendOtp = async (req, res) => {
     await sendOtpMail(email, otp);
     return res.status(200).json({
       message: "Otp Sent Successfully",
+      success:"true"
     });
   } catch (error) {
-    return res.status(500).json(`sendOtp error ${error}`);
+    return res.status(500).json({
+      message:`sendOtp error ${error}`,
+      success:"false"
+    });
   }
 };
 
@@ -126,9 +130,13 @@ export const verifyOtp = async (req, res) => {
     await user.save();
     return res.status(200).json({
       message: "Otp Verifed Successfully",
+      success:"true"
     });
   } catch (error) {
-    return res.status(500).json(`VerifiedOtp error ${error}`);
+    return res.status(500).json({
+      message:`VerifiedOtp error ${error}`,
+      success:"false"
+    });
   }
 };
 
@@ -147,8 +155,12 @@ export const resetPassword = async (req, res) => {
     await user.save();
     return res.status(200).json({
       message: "password reset successfully",
+      success:"true"
     });
   } catch (error) {
-    return res.status(500).json(`reset password error ${error}`);
+    return res.status(500).json({
+      message:`reset password error ${error}`,
+      success:"false"
+    });
   }
 };
