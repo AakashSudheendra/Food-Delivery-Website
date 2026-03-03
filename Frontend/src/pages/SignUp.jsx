@@ -9,7 +9,9 @@ import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase.js";
 import { toast } from "react-toastify";
-import { ClipLoader } from "react-spinners"
+import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice.js";
 function SignOut() {
   const primaryColor = "#ff4d2d";
   const hoverColor = "e64323";
@@ -23,12 +25,13 @@ function SignOut() {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [step,setStep]=useState(1)
-  const [err,setErr]=useState("")
-  const [loading,setLoading]=useState(false)
+  const [step, setStep] = useState(1);
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleSignUp = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signup`,
@@ -41,252 +44,260 @@ function SignOut() {
         },
         { withCredentials: true },
       );
-      console.log(result);
-      setErr("")
-      setLoading(false)
+      dispatch(setUserData(result.data));
+      setErr("");
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      setErr(error.response.data.message)
-      setLoading(false)
+      setErr(error.response.data.message);
+      setLoading(false);
     }
   };
 
   // Google Authentication
-  const handleGoogleAuth=async ()=>{
-    const provider=new GoogleAuthProvider()
-    const result=await signInWithPopup(auth,provider)
-    setFullName(result.user.displayName)
-    setEmail(result.user.email)
-    console.log(result)
-    setStep(2)
-  }
-  
-  const afterclickgoogle=async()=>{
+  const handleGoogleAuth = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    setFullName(result.user.displayName);
+    setEmail(result.user.email);
+    console.log(result);
+    setStep(2);
+  };
+
+  const afterclickgoogle = async () => {
     try {
-      const {data}=await axios.post(`${serverUrl}/api/auth/google-auth`,{
-        fullName,email,mobile,role
-      },{withCredentials:true})
-      console.log(data)
-      toast.success("User Created Successfully")
-      navigate("/signin")
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/google-auth`,
+        {
+          fullName,
+          email,
+          mobile,
+          role,
+        },
+        { withCredentials: true },
+      );
+      dispatch(setUserData(data));
+      toast.success("User Created Successfully");
+      navigate("/signin");
     } catch (error) {
       console.log(error);
     }
-  }
-
+  };
 
   return (
     <div
       className="min-h-screen w-full flex items-center justify-center p-4"
       style={{ backgroundColor: `${bgColor}` }}
     >
-      {step == 1 &&
-              <div
-        className={`bg-white rounded-xl shadow-lg w-full max-w-md p-8`}
-        style={{ border: `1px solid ${borderColor}` }}
-      >
-        <h1
-          className={`text-3xl font-bold mb-2`}
-          style={{ color: `${primaryColor}` }}
+      {step == 1 && (
+        <div
+          className={`bg-white rounded-xl shadow-lg w-full max-w-md p-8`}
+          style={{ border: `1px solid ${borderColor}` }}
         >
-          Gmax
-        </h1>
-        <p className="text-gray-600 mb-8">
-          create your account to get started with delicious food deliveries
-        </p>
-
-        {/* full name */}
-        <div className="mb-4">
-          <label
-            htmlFor="fullName"
-            className="block text-gray-700 font-medium mb-1"
+          <h1
+            className={`text-3xl font-bold mb-2`}
+            style={{ color: `${primaryColor}` }}
           >
-            FullName
-          </label>
-          <input
-            type="text"
-            className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
-            onChange={(e) => setFullName(e.target.value)}
-            value={fullName}
-            placeholder="Enter Your Fullname"
-            style={{ border: `1px solid ${borderColor}` }}
-          />
-        </div>
+            Gmax
+          </h1>
+          <p className="text-gray-600 mb-8">
+            create your account to get started with delicious food deliveries
+          </p>
 
-        {/* email */}
-        <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-gray-700 font-medium mb-1"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            placeholder="Enter Your email"
-            style={{ border: `1px solid ${borderColor}` }}
-          />
-        </div>
-
-        {/* mobile */}
-        <div className="mb-4">
-          <label
-            htmlFor="mobile"
-            className="block text-gray-700 font-medium mb-1"
-          >
-            Mobile
-          </label>
-          <input
-            type="text"
-            className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
-            onChange={(e) => setMobile(e.target.value)}
-            value={mobile}
-            placeholder="Enter Your Mobie Number"
-            style={{ border: `1px solid ${borderColor}` }}
-          />
-        </div>
-
-        {/* password */}
-        <div className="mb-4">
-          <label
-            htmlFor="password"
-            className="block text-gray-700 font-medium mb-1"
-          >
-            Password
-          </label>
-          <div className="relative">
+          {/* full name */}
+          <div className="mb-4">
+            <label
+              htmlFor="fullName"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              FullName
+            </label>
             <input
-              type={`${showpassword ? "text" : "password"}`}
+              type="text"
               className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              placeholder="Enter Your Password"
+              onChange={(e) => setFullName(e.target.value)}
+              value={fullName}
+              placeholder="Enter Your Fullname"
               style={{ border: `1px solid ${borderColor}` }}
             />
-            <button
-              className="cursor-pointer absolute right-3 top-2.75 text-gray-500 text-xl"
-              onClick={() => setShowPassword((prev) => !prev)}
+          </div>
+
+          {/* email */}
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-gray-700 font-medium mb-1"
             >
-              {!showpassword ? <FaRegEye /> : <FaRegEyeSlash />}
-            </button>
+              Email
+            </label>
+            <input
+              type="email"
+              className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              placeholder="Enter Your email"
+              style={{ border: `1px solid ${borderColor}` }}
+            />
           </div>
-        </div>
 
-        {/* role */}
-        <div className="mb-4">
-          <label
-            htmlFor="role"
-            className="block text-gray-700 font-medium mb-1"
-          >
-            Role
-          </label>
-          <div className="flex gap-2">
-            {["user", "owner", "deliveryBoy"].map((r) => (
+          {/* mobile */}
+          <div className="mb-4">
+            <label
+              htmlFor="mobile"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              Mobile
+            </label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
+              onChange={(e) => setMobile(e.target.value)}
+              value={mobile}
+              placeholder="Enter Your Mobie Number"
+              style={{ border: `1px solid ${borderColor}` }}
+            />
+          </div>
+
+          {/* password */}
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={`${showpassword ? "text" : "password"}`}
+                className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                placeholder="Enter Your Password"
+                style={{ border: `1px solid ${borderColor}` }}
+              />
               <button
-                className="cursor-pointer flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors"
-                onClick={() => setRole(r)}
-                style={
-                  role == r
-                    ? { backgroundColor: primaryColor, color: "white" }
-                    : { border: `1px solid ${borderColor}`, color: "#333" }
-                }
+                className="cursor-pointer absolute right-3 top-2.75 text-gray-500 text-xl"
+                onClick={() => setShowPassword((prev) => !prev)}
               >
-                {r}
+                {!showpassword ? <FaRegEye /> : <FaRegEyeSlash />}
               </button>
-            ))}
+            </div>
           </div>
-        </div>
-        <button
-          onClick={handleSignUp}
-          disabled={loading}
-          className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
-        >
-          {loading ? <ClipLoader size={20} color='white' /> : "Sign Up"}
-        </button>
-        {err && <p className="text-red-500 text-center">*{err}</p>}
-        <p className="mt-4">
-          <hr />
-        </p>
-        {/* google signup */}
-        <button onClick={handleGoogleAuth} className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100 cursor-pointer">
-          <FcGoogle size={20} />
-          <span>Sign Up with Google</span>
-        </button>
-        <p
-          className="text-center mt-2 cursor-pointer"
-          onClick={() => navigate("/signin")}
-        >
-          Already have an account ?{" "}
-          <span className="text-[#ff4d2d]">SignIn</span>
-        </p>
-      </div>
-      }
-            {step == 2 &&
-              <div
-        className={`bg-white rounded-xl shadow-lg w-full max-w-md p-8`}
-        style={{ border: `1px solid ${borderColor}` }}
-      >
-        <h1
-          className={`text-3xl font-bold mb-2`}
-          style={{ color: `${primaryColor}` }}
-        >
-          Gmax
-        </h1>
 
-
-        {/* mobile */}
-        <div className="mb-4">
-          <label
-            htmlFor="mobile"
-            className="block text-gray-700 font-medium mb-1"
-          >
-            Mobile
-          </label>
-          <input
-            type="text"
-            className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
-            onChange={(e) => setMobile(e.target.value)}
-            value={mobile}
-            placeholder="Enter Your Mobie Number"
-            style={{ border: `1px solid ${borderColor}` }}
-          />
-        </div>
-
-        {/* role */}
-        <div className="mb-4">
-          <label
-            htmlFor="role"
-            className="block text-gray-700 font-medium mb-1"
-          >
-            Role
-          </label>
-          <div className="flex gap-2">
-            {["user", "owner", "deliveryBoy"].map((r) => (
-              <button
-                className="cursor-pointer flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors"
-                onClick={() => setRole(r)}
-                style={
-                  role == r
-                    ? { backgroundColor: primaryColor, color: "white" }
-                    : { border: `1px solid ${borderColor}`, color: "#333" }
-                }
-              >
-                {r}
-              </button>
-            ))}
+          {/* role */}
+          <div className="mb-4">
+            <label
+              htmlFor="role"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              Role
+            </label>
+            <div className="flex gap-2">
+              {["user", "owner", "deliveryBoy"].map((r) => (
+                <button
+                  className="cursor-pointer flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors"
+                  onClick={() => setRole(r)}
+                  style={
+                    role == r
+                      ? { backgroundColor: primaryColor, color: "white" }
+                      : { border: `1px solid ${borderColor}`, color: "#333" }
+                  }
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
           </div>
+          <button
+            onClick={handleSignUp}
+            disabled={loading}
+            className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
+          >
+            {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
+          </button>
+          {err && <p className="text-red-500 text-center">*{err}</p>}
+          <p className="mt-4">
+            <hr />
+          </p>
+          {/* google signup */}
+          <button
+            onClick={handleGoogleAuth}
+            className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100 cursor-pointer"
+          >
+            <FcGoogle size={20} />
+            <span>Sign Up with Google</span>
+          </button>
+          <p
+            className="text-center mt-2 cursor-pointer"
+            onClick={() => navigate("/signin")}
+          >
+            Already have an account ?{" "}
+            <span className="text-[#ff4d2d]">SignIn</span>
+          </p>
         </div>
-        <button
-          onClick={afterclickgoogle}
-          className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
+      )}
+      {step == 2 && (
+        <div
+          className={`bg-white rounded-xl shadow-lg w-full max-w-md p-8`}
+          style={{ border: `1px solid ${borderColor}` }}
         >
-          Sign Up
-        </button>
-      </div>
-      }
+          <h1
+            className={`text-3xl font-bold mb-2`}
+            style={{ color: `${primaryColor}` }}
+          >
+            Gmax
+          </h1>
+
+          {/* mobile */}
+          <div className="mb-4">
+            <label
+              htmlFor="mobile"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              Mobile
+            </label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-2 focus:outline-orange-500"
+              onChange={(e) => setMobile(e.target.value)}
+              value={mobile}
+              placeholder="Enter Your Mobie Number"
+              style={{ border: `1px solid ${borderColor}` }}
+            />
+          </div>
+
+          {/* role */}
+          <div className="mb-4">
+            <label
+              htmlFor="role"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              Role
+            </label>
+            <div className="flex gap-2">
+              {["user", "owner", "deliveryBoy"].map((r) => (
+                <button
+                  className="cursor-pointer flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors"
+                  onClick={() => setRole(r)}
+                  style={
+                    role == r
+                      ? { backgroundColor: primaryColor, color: "white" }
+                      : { border: `1px solid ${borderColor}`, color: "#333" }
+                  }
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button
+            onClick={afterclickgoogle}
+            className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
+          >
+            Sign Up
+          </button>
+        </div>
+      )}
     </div>
   );
 }
