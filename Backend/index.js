@@ -5,6 +5,7 @@ import connectDb from "./config/db.js"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import authRouter from "./routes/auth.routes.js"
+import userRouter from "./routes/user.routes.js"
 const app=express()
 const port=process.env.PORT || 5000
 app.use(cors({
@@ -14,6 +15,7 @@ app.use(cors({
 app.use(express.json())//read json data from frontend
 app.use(cookieParser())//it read cookies sent from browser
 app.use("/api/auth",authRouter)
+app.use("/api/user",userRouter)
 
 app.listen(port,()=>{
     connectDb()

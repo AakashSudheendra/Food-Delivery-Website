@@ -9,6 +9,7 @@ import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase.js";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners"
 function SignOut() {
   const primaryColor = "#ff4d2d";
   const hoverColor = "e64323";
@@ -23,8 +24,11 @@ function SignOut() {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [step,setStep]=useState(1)
+  const [err,setErr]=useState("")
+  const [loading,setLoading]=useState(false)
 
   const handleSignUp = async () => {
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signup`,
@@ -38,8 +42,12 @@ function SignOut() {
         { withCredentials: true },
       );
       console.log(result);
+      setErr("")
+      setLoading(false)
     } catch (error) {
       console.log(error);
+      setErr(error.response.data.message)
+      setLoading(false)
     }
   };
 
@@ -193,10 +201,12 @@ function SignOut() {
         </div>
         <button
           onClick={handleSignUp}
+          disabled={loading}
           className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
         >
-          Sign Up
+          {loading ? <ClipLoader size={20} color='white' /> : "Sign Up"}
         </button>
+        {err && <p className="text-red-500 text-center">*{err}</p>}
         <p className="mt-4">
           <hr />
         </p>

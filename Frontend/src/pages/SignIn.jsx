@@ -8,6 +8,7 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
+import { ClipLoader } from "react-spinners";
 function SignIn() {
   const primaryColor = "#ff4d2d";
   const hoverColor = "e64323";
@@ -18,8 +19,11 @@ function SignIn() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signin`,
@@ -30,8 +34,12 @@ function SignIn() {
         { withCredentials: true },
       );
       console.log(result);
+      setErr("");
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setErr(error.response.data.message);
+      setLoading(false);
     }
   };
 
@@ -123,11 +131,13 @@ function SignIn() {
         </div>
 
         <button
+          disabled={loading}
           onClick={handleSignIn}
           className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
         >
-          Sign In
+          {loading ? <ClipLoader size={20} color="white" /> : "Sign In"}
         </button>
+        {err && <p className="text-red-500 text-center">*{err}</p>}
         <p className="mt-4">
           <hr />
         </p>

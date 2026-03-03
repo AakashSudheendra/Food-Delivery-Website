@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { ClipLoader } from "react-spinners";
 
 function ForgotPassword() {
   const primaryColor = "#ff4d2d";
@@ -17,30 +18,40 @@ function ForgotPassword() {
   const [newpassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSendOtp = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
         { email },
         { withCredentials: true },
       );
+      setErr("");
+      setLoading(false);
       if (result.data.success) {
         toast.success("OTP Sent Successfully");
         console.log(result);
         setStep(2);
       }
     } catch (error) {
+      setErr(error.response.data.message);
       console.log(error);
+      setLoading(false);
     }
   };
   const handleVerifyOtp = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
         { email, otp },
         { withCredentials: true },
       );
+      setErr("");
+      setLoading(false);
       if (result.data.success) {
         toast.success("OTP Verified Successfully");
         console.log(result);
@@ -48,10 +59,13 @@ function ForgotPassword() {
       }
     } catch (error) {
       console.log(error);
+      setErr(error.response.data.message);
+      setLoading(false);
     }
   };
 
   const handleResetPassword = async () => {
+    setLoading(true);
     try {
       if (newpassword != confirmPassword) {
         return null;
@@ -61,13 +75,17 @@ function ForgotPassword() {
         { email, newpassword },
         { withCredentials: true },
       );
+      setErr("");
+      setLoading(false);
       if (result.data.success) {
         toast.success("Password Reset Successfully");
         console.log(result);
         navigate("/signin");
       }
     } catch (error) {
+      setErr(error.response.data.message);
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -110,11 +128,13 @@ function ForgotPassword() {
               />
             </div>
             <button
+              disabled={loading}
               onClick={handleSendOtp}
               className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
             >
-              Send Otp
+              {loading ? <ClipLoader size={20} color="white" /> : "Send Otp"}
             </button>
+            {err && <p className="text-red-500 text-center mt-4">*{err}</p>}
           </div>
         )}
         {step == 2 && (
@@ -137,11 +157,13 @@ function ForgotPassword() {
               />
             </div>
             <button
+              disabled={loading}
               onClick={handleVerifyOtp}
               className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
             >
-              Verify
+              {loading ? <ClipLoader size={20} color="white" /> : "Verify"}
             </button>
+            {err && <p className="text-red-500 text-center mt-4">*{err}</p>}
           </div>
         )}
         {step == 3 && (
@@ -180,11 +202,17 @@ function ForgotPassword() {
               />
             </div>
             <button
+              disabled={loading}
               onClick={handleResetPassword}
               className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}
             >
-              Reset Password
+              {loading ? (
+                <ClipLoader size={20} color="white" />
+              ) : (
+                "Reset Password"
+              )}
             </button>
+            {err && <p className="text-red-500 text-center mt-4">*{err}</p>}
           </div>
         )}
       </div>
