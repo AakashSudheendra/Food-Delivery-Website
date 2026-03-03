@@ -2,7 +2,7 @@ import User from "../models/user.model.js";
 
 export const getCurrentUser = async (req, res) => {
   try {
-    const userId = req.id;
+    const userId = req.userId;
     if (!userId) {
       return res.status(400).json({
         message: "userId is not found",
