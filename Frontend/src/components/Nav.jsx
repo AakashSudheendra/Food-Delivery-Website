@@ -2,13 +2,25 @@ import React, { useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineSearch } from "react-icons/md";
 import { FaOpencart } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GiSkullCrossedBones } from "react-icons/gi";
+import axios from "axios";
+import { serverUrl } from "../App";
+import { setUserData } from "../redux/userSlice";
 
 function Nav() {
   const { userData , city } = useSelector((state) => state.user);
   const [showinfo, setShowInfo] = useState(false);
   const [showSearch,setShowSearch]=useState(false);
+  const dispatch=useDispatch()
+  const handleLogout=async()=>{
+    try {
+      const result=await axios.get(`${serverUrl}/api/auth/signout`,{withCredentials:true})
+      dispatch(setUserData(null))
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-[#fff9f6] m-2">
 
@@ -78,7 +90,7 @@ function Nav() {
             <div className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer">
               My Orders
             </div>
-            <div className="text-[#ff4d2d] font-semibold cursor-pointer">
+            <div className="text-[#ff4d2d] font-semibold cursor-pointer" onClick={handleLogout}>
               Log Out
             </div>
           </div>
