@@ -10,9 +10,11 @@ import "react-toastify/dist/ReactToastify.css";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import { useSelector } from "react-redux";
 import Home from "./pages/Home";
+import useGetCity from "./hooks/useGetCity";
 
 function App() {
   useGetCurrentUser()
+  useGetCity()
   const {userData}=useSelector(state=>state.user)
 
   return (
