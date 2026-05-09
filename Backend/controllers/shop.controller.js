@@ -38,7 +38,23 @@ export const createAndEditShop = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-        message:`created shop error ${error}`
-    })
+      message: `created shop error ${error}`,
+    });
+  }
+};
+
+export const getMyShop = async (req, res) => {
+  try {
+    const shop = await Shop.findOne({ owner: req.userId }).populate(
+      "owner items",
+    );
+    if (!shop) {
+      return null;
+    }
+    return res.status(200).json(shop);
+  } catch (error) {
+    return res.status(500).json({
+      message: `get My shop error ${error}`,
+    });
   }
 };

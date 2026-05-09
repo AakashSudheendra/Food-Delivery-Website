@@ -1,6 +1,6 @@
 import express from "express";
 import { addItem, editItem } from "../controllers/item.controller.js";
-import isAuth from "../middlewares/isAuth";
+import isAuth from "../middlewares/isAuth.js";
 import { upload } from "../middlewares/multer.js";
 
 //user routes
