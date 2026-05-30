@@ -5,7 +5,7 @@ import { FaUtensils } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 function OwnerDashboard() {
   const { myShopData } = useSelector((state) => state.owner);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   return (
     <div className="w-full min-h-screen bg-[#fff9f6] flex flex-col items-center">
       <Nav />
@@ -21,10 +21,30 @@ function OwnerDashboard() {
                 Join our Food delivery platform and reach thousands of hungry
                 customers every day
               </p>
-              <button onClick={()=>navigate("/create-edit-shop")} className="bg-[#ff4d2d] text-white px-5 sm:px-6 py-2 rounded-full font-medium shadow-md hover:bg-orange-600 transition-colors duration-200">
+              <button
+                onClick={() => navigate("/create-edit-shop")}
+                className="bg-[#ff4d2d] text-white px-5 sm:px-6 py-2 rounded-full font-medium shadow-md hover:bg-orange-600 transition-colors duration-200"
+              >
                 Get Started
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* shop details  */}
+      {myShopData && (
+        <div className="w-full flex flex-col items-center gap-6 px-4 sm:px-6">
+          <h1 className="text-2xl sm:text-3xl text-gray-900 flex items-center gap-3 mt-8 text-center">
+            <FaUtensils className="text-[#ff4d2d] w-14 h-14" />
+            Welcome to {myShopData.name}
+          </h1>
+
+          <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-orange-100 hover:shadow-2xl transition-all duration-300 w-full max-w-3xl relative">
+            <img
+              src={myShopData.image}
+              alt={myShopData.name}
+              className="w-full h-48 sm:h-64 object-cover"
+            />
           </div>
         </div>
       )}
