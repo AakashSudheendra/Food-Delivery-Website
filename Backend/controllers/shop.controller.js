@@ -37,6 +37,8 @@ export const createAndEditShop = async (req, res) => {
       shop,
     });
   } catch (error) {
+    console.log(error);
+    console.log(error.response?.data);
     return res.status(500).json({
       message: `created shop error ${error}`,
     });
